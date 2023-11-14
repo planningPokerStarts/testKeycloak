@@ -1,0 +1,48 @@
+version: "3.8"
+
+services:
+  client:
+      container_name: client
+      build:
+        dockerfile: pal_frontend/Dockerfile
+      hostname: localhost
+      ports:
+        - "5440:5440"
+  postgres:
+    container_name: postgres2
+    image: library/postgres2
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: keycloak_db
+    ports:
+      - "5435:5435"
+    restart: unless-stopped
+  keycloak:
+    image: jboss/keycloak2
+    container_name: keycloak2
+    volumes:
+      - ./keycloak/realm-export.json:/opt/jboss/keycloak/imports/realm-export.json
+      - ./keycloak/keycloak-add-user.json:/opt/jboss/keycloak/standalone/configuration/keycloak-add-user.json
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak_db
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
+    ports:
+      - "5436:8080"
+    depends_on:
+      - postgres2
+    links:
+      - "postgres:postgres"
+  spring-api:
+    container_name: springApi
+    build:
+      dockerfile: demo-keycloak-resource/Dockerfile
+    hostname: localhost
+    ports:
+      - "5450:5450"
