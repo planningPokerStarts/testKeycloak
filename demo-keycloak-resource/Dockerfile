@@ -4,7 +4,7 @@
 FROM maven:latest AS build
 COPY demo-keycloak-resource/src /home/app/src
 COPY demo-keycloak-resource/pom.xml /home/app
-RUN mvn -f /home/app/pom.xml clean -DskipTests compile package
+RUN mvn -f /home/app/pom.xml compile package
 
 #
 # Package stage
