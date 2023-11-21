@@ -7,22 +7,24 @@ services:
         dockerfile: pal_frontend/Dockerfile
       hostname: localhost
       ports:
-        - "5440:5440"
+        - "3010:3000"
   postgres:
-    image: library/postgres:${KC_POSTGRES_IMAGE_TAG:-14}
-    container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
+    image: postgres
+    container_name: cntpostgreskeycloak
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
       POSTGRES_DB: keycloak_db
-    healthcheck:
-      test: pg_isready -d postgres
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    #healthcheck:
+    #  test: pg_isready -d postgres
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 3
+    #  start_period: 5s
     ports:
-      - "5435:5435"
+      - "5435:5432"
     restart: unless-stopped
   keycloak:
     image: jboss/keycloak
@@ -34,17 +36,17 @@ services:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
       DB_DATABASE: keycloak_db
-      DB_USER: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_USER: postgres
+      DB_PASSWORD: postgres
       #KEYCLOAK_USER: admin
       #KEYCLOAK_PASSWORD: admin
       KEYCLOAK_IMPORT: /opt/jboss/keycloak/imports/realm-export.json
     ports:
-      - "5436:5436"
+      - "5436:8080"
     depends_on:
       - postgres
-    links:
-      - "postgres:postgres"
+    #links:
+    #  - "postgres:postgres"
   spring-api:
     container_name: springapi
     build:

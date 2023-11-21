@@ -31,7 +31,7 @@
     } ],
     "realmRoles" : [ "admin" ]
   }, {
-    "username" : "admin",
+    "username" : "keycloak_admin",
     "enabled" : true,
     "credentials" : [ {
       "type" : "password",
