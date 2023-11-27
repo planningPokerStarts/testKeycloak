@@ -9,7 +9,7 @@
 		<version>2.3.2.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>org.akazakov.keycloak</groupId>
+	<groupId>org.pps.keycloak</groupId>
 	<artifactId>demo-keycloak-resource</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>demo-keycloak-resource</name>

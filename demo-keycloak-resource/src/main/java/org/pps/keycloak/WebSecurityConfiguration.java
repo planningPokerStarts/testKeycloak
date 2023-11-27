@@ -1,4 +1,4 @@
-package org.akazakov.keycloak;
+package org.pps.keycloak;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
@@ -14,10 +14,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -29,6 +35,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         .antMatchers("/api/anonymous/**").permitAll()
                         .anyRequest().authenticated())
+                .csrf((csrf) -> csrf.disable()) // отключаем встроеннцю защиту от csrf атак, т.к. используем свою из OAUTH2
+                .cors(withDefaults()) // разрешает выполнять OPTIONS запросы от клиента (preflight запросы)
+
                 .oauth2ResourceServer(resourceServerConfigurer -> resourceServerConfigurer
                         .jwt(jwtConfigurer -> jwtConfigurer
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
@@ -66,5 +75,16 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 return grantedAuthorities;
             }
         };
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

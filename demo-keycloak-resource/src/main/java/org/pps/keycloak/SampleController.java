@@ -1,26 +1,33 @@
-package org.akazakov.keycloak;
+package org.pps.keycloak;
 
+import net.minidev.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 
 @RestController
+//@CrossOrigin("http://localhost:3000/*")
 @RequestMapping("/api")
 public class SampleController {
 
-    @GetMapping("/anonymous")
-    public String getAnonymousInfo() {
+    @GetMapping(value = "/anonymous", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getAnonymousInfo() {
         System.out.println("test anonymous");
-        return "Anonymous";
+        return new ResponseEntity<String>("GET Response : Anonymous", HttpStatus.OK);
     }
 
-    @GetMapping("/user")
+    @GetMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USER')")
-    public String getUserInfo() {
-        return "user info";
+    public ResponseEntity<?> getUserInfo() {
+        System.out.println("test user");
+        return new ResponseEntity<String>("user info", HttpStatus.OK);
     }
 
     @GetMapping("/admin")

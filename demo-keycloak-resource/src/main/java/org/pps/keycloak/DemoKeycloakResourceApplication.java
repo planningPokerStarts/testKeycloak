@@ -1,4 +1,4 @@
-package org.akazakov.keycloak;
+package org.pps.keycloak;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
